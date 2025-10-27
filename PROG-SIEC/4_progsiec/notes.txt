@@ -1,0 +1,11 @@
+kill(pid,sig)
+funkcja (rowniez systemowa) kill wysyla sygnal sig do procesu pid
+
+raise(sig)
+we specify signal to the caller (myself)
+
+alarm(int n)
+zlecamy/zamawiamy u jadra wysalnie sygnalu
+when we execute alarm function and specify number a seconds we request kernel
+to send sigalarm signal to us essa
+
