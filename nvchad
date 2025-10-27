@@ -1,0 +1,26 @@
+lsp config::::
+require("nvchad.configs.lspconfig").defaults()
+
+local servers = { "html", "cssls","clangd" }
+vim.lsp.enable(servers)
+vim.lsp.enable('clangd')
+-- read :h vim.lsp.config for changing options of lsp servers 
+
+
+theme: onedark
+
+init.lua :::::
+return {
+  {
+    "stevearc/conform.nvim",
+    -- event = 'BufWritePre', -- uncomment for format on save
+    opts = require "configs.conform",
+  },
+  {
+    "neovim/nvim-lspconfig",
+    config = function()
+      require "configs.lspconfig"
+    end,
+  },
+
+}
