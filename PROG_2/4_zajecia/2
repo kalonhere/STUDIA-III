@@ -1,0 +1,38 @@
+#include <iostream>
+using namespace std;
+
+//mozna zamienic struct na class bez problemow kompilacji na tym etapie :3
+/*struct Film {
+    string tytul;
+    int czasTrwania;
+};*/
+
+
+//klasy w odroznieniu od struktur maja rowniez metody
+//nie chcemy czasami dawac pelnej swobody uzytkownikowi, mozemy dac interfejs ale nie bezposrednia wladze
+// zmienne w klasie z bomby sa prywatne 
+class Film {
+//private jest z bomby 
+private:
+
+
+public:
+    string tytul;
+    int czasTrwania;
+};
+
+
+
+
+int main(){
+    Film f;
+    //f jest OBIEKTEM KLASY film
+    
+    //jak jest klasa to nie mozna ustawiac tak pol ( bo z bomby sa prywatne )
+    //tera mozemy bo sa pod public
+    f.tytul = "abc";
+    f.czasTrwania = 10;
+
+
+    return 0;
+}
