@@ -41,7 +41,6 @@ public:
         tab = new float(rok_premiery);
         cout << "1 ARG KONSTRUKTOR" << endl;
     }
-    
     Film(string tytul, int czasTrwania, int rok_premiery){
         this->tytul = tytul;
         this->czasTrwania = czasTrwania;
@@ -50,17 +49,14 @@ public:
         tab = new float(rok_premiery);
         cout << "3 ARG KONSTRUKTOR" << endl;
     }
-
-
     //DESTRUKTOR
     ~Film(){ //zadaniem jego jest sprzatanie po sobie
         delete[] tab;
         cout << "DESTRUKTOR" << endl;
-
     }
 
 
-        bool isFromXXICentury(){
+    bool isFromXXICentury(){
         //zwroc true jezeli wiadomo
         return rok_premiery > 2000;
     }
@@ -93,9 +89,6 @@ class KontoBankowe{
         }
 
 };//class konto
-
-
-
 
 int main(){
     Film f;
