@@ -3,7 +3,7 @@
 #include<errno.h>
 
 int main() {
-
+    //essa t
     extern int errno;
     char buf[128];
     int ile;
