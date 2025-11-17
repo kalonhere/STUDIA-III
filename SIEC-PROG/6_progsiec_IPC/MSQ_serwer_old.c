@@ -55,7 +55,8 @@ int main(int argc, char * argv[]) {
 		n = msgrcv(msqid, (void *) &msg, MY_MSG_SIZE, 0, 0);
 		printf("[Serwer]: otrzymalem komunikat rozmiaru %d: ", n);
 		printf("%s", msg.txt);
-
+        printf("[Serwer]: typ komunikatu: %ld",msg.mtype);
+        fflush(stdout);
 	}
 
 	return 0;
