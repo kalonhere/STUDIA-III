@@ -42,13 +42,11 @@ void mergeSort(int array[], int left_index, int right_index){
 
 int main(){
   int number_of_elements;
-  cout << "Number of elements: ";
   cin >> number_of_elements;
 
   int *array = new int[number_of_elements];
   array_copy = new int[number_of_elements];
   
-  cout << "Type elements of the array\n";
   for(int i = 0;i<number_of_elements;i++){
     cin >> array[i];
   }
