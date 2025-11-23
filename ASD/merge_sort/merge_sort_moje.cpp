@@ -56,6 +56,8 @@ int main(){
   for(int i = 0;i<number_of_elements;i++){
     cout << array[i] << " ";
   }
-
+  
+  delete[] array;
+  delete[] array_copy;
   return 0;
 }

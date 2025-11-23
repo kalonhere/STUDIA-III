@@ -20,6 +20,8 @@ public:
 
   kantor(float marza, int arr_size);
 
+  kantor(const kantor &kantor_template);
+
   void przeliczKwote(float kwota, CURRENCY input, CURRENCY output);
 
   ~kantor();
@@ -27,11 +29,8 @@ public:
   void addHistory(float marza);
 
   void printHistory();
+  
+  void printLastTransaction();
 
-  };
-
-
-
-
-
+};
 #endif
