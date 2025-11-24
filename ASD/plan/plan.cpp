@@ -49,7 +49,7 @@ int main(){
     zajecie ostatnie_zajecie;
     for(int i =0; i<n;i++){
         if(i==0){licznik_zajec++; ostatnie_zajecie = lista_zajec[i];}
-        if((lista_zajec[i].start) >= ostatnie_zajecie.koniec){
+        if((lista_zajec[i].start) == ostatnie_zajecie.koniec){
             licznik_zajec++;
             ostatnie_zajecie = lista_zajec[i];
         }
