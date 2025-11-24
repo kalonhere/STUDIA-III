@@ -1,0 +1,8 @@
+do peirwszego trzeba zmienic na read i dodac znak \o do shared_memory[n-1] = '\0'. za n to number bajtow od funkcji read
+drguie to jest tam opisane na essie
+w trzecim jest dwa razy robiony klucz po chuju na serwerze
+
+
+
+prodzekt:
+
