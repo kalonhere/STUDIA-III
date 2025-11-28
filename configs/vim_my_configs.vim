@@ -1,7 +1,6 @@
-map <C-n> :NERDTree
-
 set nocompatible
-
+map <C-n> :NERDTree <cr>
+let g:NERDTreeWinPos = "left"
 call plug#begin()
 
 " List your plugins here
