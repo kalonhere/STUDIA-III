@@ -7,7 +7,7 @@
 int main(){
     FILE *file_pointer;
     char buffer[255];
-    file_pointer = popen("/usr/bin/ls","r");
+    file_pointer = popen("/usr/bin/ls","ls");
 
     while(fgets(buffer,255,file_pointer)){
         printf("%s",buffer);
