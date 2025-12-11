@@ -47,7 +47,6 @@ int main(int argc, char * argv[]) {
 		exit(1);
 	}
 	printf(" OK  (id: %d)\n", msqid);
-
 	printf("[Serwer]: czekam na komunikaty...\n");
 
 	while(8) {
