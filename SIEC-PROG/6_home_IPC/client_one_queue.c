@@ -33,31 +33,28 @@ void infoMessage(const char *text){
 int main(int argc, char *argv[]){
   system("clear");
   struct my_msg server_message;
-  struct my_msg client_message;
 
   if(argc != 2){
     debugMessage("Wrong arguments count ($key_generation_file)");
     exit(EXIT_FAILURE);
   }
   msq_key_server = ftok(argv[1],SERVER);
-  msq_key_client = ftok(argv[1],CLIENT);
-  if((msq_key_server * msq_key_client) >= 0) {debugMessage("Keys created");}else{
+  if((msq_key_server) >= 0) {debugMessage("Keys created");}else{
     perror("message key creation");
     exit(EXIT_FAILURE);
   }
   
   if((msq_id_server = msgget(msq_key_server,0)) == -1){perror("server connection");exit(EXIT_FAILURE);}
-  if((msq_id_client = msgget(msq_key_client,0)) == -1){perror("client connection");exit(EXIT_FAILURE);}
   infoMessage("Message queues connected.");
 
   char message_buffer[MESSAGE_SIZE];
   long type_buffer = 0;
   printf("Message:");
   fgets(server_message.text,MESSAGE_SIZE,stdin);
-  printf("Type of message ( >0 ): ");
+  printf("Type of message ( >1 ): ");
   while(1){
     scanf("%ld",&type_buffer);
-    if(type_buffer > 0){
+    if(type_buffer > 1){
       server_message.type = type_buffer;
       break;
     }else{
@@ -69,9 +66,9 @@ int main(int argc, char *argv[]){
   if((message_size = msgsnd(msq_id_server,&server_message,MESSAGE_SIZE,0)) == -1){perror("msgsnd");exit(EXIT_FAILURE);}
   infoMessage("Message sent.");
 
-  message_size = msgrcv(msq_id_client,&client_message,MESSAGE_SIZE,0,0);
-  printf("Received message. Type = %ld, Size = %d \n",client_message.type,message_size);
-  printf("%s\n",client_message.text);
+  message_size = msgrcv(msq_id_server,&server_message,MESSAGE_SIZE,type_buffer,0);
+  printf("Received message. Type = %ld, Size = %d \n",server_message.type,message_size);
+  printf("%s\n",server_message.text);
 
 
   return 0;

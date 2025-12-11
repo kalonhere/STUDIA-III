@@ -32,7 +32,6 @@ void infoMessage(const char *text){
 }
 void signalHandler(int signal){
   if(msgctl(msq_id_server,IPC_RMID,0) == -1){perror("server queue deletion");exit(EXIT_FAILURE);};
-  if(msgctl(msq_id_client,IPC_RMID,0) == -1){perror("client queue deletion");exit(EXIT_FAILURE);};
   debugMessage("Message queue destroyed :3");
   exit(EXIT_SUCCESS);
 }
@@ -41,21 +40,18 @@ void signalHandler(int signal){
 int main(int argc, char *argv[]){
   system("clear");
   struct my_msg server_message;
-  struct my_msg client_message;
   signal(SIGINT,signalHandler);  
   if(argc != 2){
     debugMessage("Wrong arguments count ($key_generation_file)");
     exit(EXIT_FAILURE);
   }
   msq_key_server = ftok(argv[1],SERVER);
-  msq_key_client = ftok(argv[1],CLIENT);
-  if((msq_key_server * msq_key_client) >= 0) {debugMessage("Keys created");}else{
+  if((msq_key_server) >= 0) {debugMessage("Keys created");}else{
     perror("message key creation");
     exit(EXIT_FAILURE);
   }
   
   if((msq_id_server = msgget(msq_key_server,0777 | IPC_CREAT)) == -1){perror("server creation");exit(EXIT_FAILURE);}
-  if((msq_id_client = msgget(msq_key_client,0777 | IPC_CREAT)) == -1){perror("client creation");exit(EXIT_FAILURE);}
   
   infoMessage("Message queues created. Awaiting message...");
   while(1){
@@ -64,9 +60,8 @@ int main(int argc, char *argv[]){
     printf("Received message. Type = %ld, Size = %d \n",server_message.type,message_size);
     printf("%s",server_message.text);
     //sending confirmation
-    client_message.type = 11;
-    strcpy(client_message.text,"Confirmation");
-    if((message_size = msgsnd(msq_id_client,&client_message,MESSAGE_SIZE,0)) == -1){perror("msgsnd");exit(EXIT_FAILURE);}
+    strcpy(server_message.text,"Confirmation");
+    if((message_size = msgsnd(msq_id_server,&server_message,MESSAGE_SIZE,0)) == -1){perror("msgsnd");exit(EXIT_FAILURE);}
     infoMessage("Confirmation sent");
   }
 
