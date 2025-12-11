@@ -1,0 +1,17 @@
+SEM         SHM         MSG         DESCRIPTION
+sys/sem.h   sys/shm.h   sys/msg.h   headers
+get         get         get         create or attach
+ctl         ctl         ctl         control operations
+op                                  operations on semaphore group
+            at                      attach memory
+            dt                      detach memory
+                        snd         send message
+                        rcv         receive message
+
+ipcs  - show ipc objects description 
+ipcrm - remove ipc object 
+ipcmk - create ipc object 
+
+
+in c:
+ftok - create key
