@@ -13,7 +13,6 @@
 //stale
 #define NICK_LENGTH 20
 #define MESSAGE_SIZE 100
-#define LOG_SIZE 1
 
 //struktura wiadomosci
 typedef struct entry{
@@ -30,11 +29,6 @@ key_t twitterkey;
 int twitterid;
 struct entry *twitterpointer;
 
-
-
-//key_t logkey;
-//int logid;
-//int *logpointer;
 
 int number_of_entries;
 
@@ -75,17 +69,11 @@ void signalHandler(int sig){
   }
   //SIGNAL INTERRUPT
   if(sig == SIGINT){
-    printf("closing");
-    //if(shmdt(logpointer) == 0){printf("odlaczono log\n");}else{printf("nie mozna odlaczyc log\n");}
-    //if(shmctl(logid,IPC_RMID,0) == 0){printf("usunieto log\n");}else{printf("nie mozna usunac log\n");}
-    
+    printf("closing\n");
     if(shmdt(twitterpointer) == 0){printf("odlaczono twitter\n");}else{printf("nie mozna odlaczyc twitter\n");}
     if(shmctl(twitterid,IPC_RMID,0) == 0){printf("usunieto twitter\n");}else{printf("nie mozna usunac twitter\n");}
-
     exit(EXIT_SUCCESS);
   }
-
-
 }
 
 int main(int argc, char* argv[]){
@@ -107,16 +95,6 @@ int main(int argc, char* argv[]){
     exit(EXIT_FAILURE);
   }
 
-  //if((logkey = ftok(argv[1], 2)) == -1){
-  //  perror("generating log key error");
-  //  exit(EXIT_FAILURE);
-  //}
-
-  //printf("creating log memory segment\n");
-  //if((logid = shmget(logkey,(LOG_SIZE*sizeof(int)),0666|IPC_CREAT|IPC_EXCL)) == -1){
-  //  perror("couldn't allocate log memory");
-  //  exit(EXIT_FAILURE);
-  //}
   
   
   //printf("creating shared memory segment\n");
@@ -126,10 +104,6 @@ int main(int argc, char* argv[]){
     exit(EXIT_FAILURE);
   }
 
-  //if((logpointer = (int *) shmat(logid,(void*) 0,0)) == (int *)-1){
-  //  perror("shmat error");
-  //  exit(EXIT_FAILURE);
-  //}
   
   //przylaczanie pamieci
   if((twitterpointer = (entry *) shmat(twitterid,(void*) 0,0)) == (entry *)-1){

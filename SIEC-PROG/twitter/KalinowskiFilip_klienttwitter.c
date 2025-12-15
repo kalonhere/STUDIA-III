@@ -12,7 +12,7 @@
 //stale
 #define NICK_LENGTH 20
 #define MESSAGE_SIZE 100
-#define LOG_SIZE 1
+//#define LOG_SIZE 1
 //struktura wiadomosci
 typedef struct entry{
   int id;
@@ -24,12 +24,8 @@ typedef struct entry{
 
 key_t twitterkey;
 int twitterid;
-
 struct entry *twitterpointer;
 
-//key_t logkey;
-//int logid;
-//int *logpointer;
 int number_of_entries;
 
 
@@ -58,7 +54,7 @@ int main(int argc, char* argv[]){
   
   //sprawdzenie ilosci argumentow
   if((argc < 3) || (argc>4)){
-    printf("zla liczba argumentow");
+    printf("zla liczba argumentow\n");
     exit(EXIT_SUCCESS);
   }
   //generowanie klucza
@@ -66,30 +62,12 @@ int main(int argc, char* argv[]){
     perror("generating key error");
     exit(EXIT_FAILURE);
   }
-
-  //if((logkey = ftok(argv[1], 2)) == -1){
-  //  perror("generating log key error");
-  //  exit(EXIT_FAILURE);
-  //}
-  //printf("creating log memory segment\n");
-  //if((logid = shmget(logkey,0,0)) == -1){
-  //  perror("couldn't read log memory");
-  //  exit(EXIT_FAILURE);
-  //}
   
-  
-  //printf("creating shared memory segment\n");
   //asocjacja segmentu pamieci
   if((twitterid = shmget(twitterkey,0,0)) == -1){
     perror("couldn't read memory");
     exit(EXIT_FAILURE);
   }
-
-  //if((logpointer = (int *) shmat(logid,(void*) 0,0)) == (int *)-1){
-  //  perror("shmat error");
-  //  exit(EXIT_FAILURE);
-  //}
-
   //dolaczenie pamieci 
   if((twitterpointer = (entry *) shmat(twitterid,(void*) 0,0)) == (entry *)-1){
     perror("shmat error");
@@ -101,7 +79,6 @@ int main(int argc, char* argv[]){
   shmctl(twitterid,IPC_STAT,&buffor);
   number_of_entries = (buffor.shm_segsz / sizeof(entry));
   
-//printf("liczba elementow: %d\n",number_of_entries);
 
   //rozne kombinacje 
   if(argc == 3){
