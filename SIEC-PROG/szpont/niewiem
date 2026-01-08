@@ -1,0 +1,50 @@
+\documentclass[11pt,a4paper,leqno]{article}
+\usepackage{geometry}
+\usepackage{longtable}
+\usepackage{verbatim}
+\usepackage{polski}
+\usepackage[utf8]{inputenc}
+\usepackage[OT4]{fontenc}
+\newgeometry{tmargin=0cm, bmargin=0cm, lmargin=0.1cm, rmargin=0.1cm}
+\usepackage{enumitem}
+\pagestyle{empty}
+\usepackage{multicol}
+\setlength{\columnseprule}{1pt}
+%def\columnseprulecolor{\color{black}}
+
+\begin{document}
+\begin{flushright}
+Programowanie Sieciowe, II inf, Kolokwium II, 21 stycznia 2025
+\end{flushright}
+{\bf Uwagi - (przeczytaj dokładnie!)}
+\begin{itemize}[itemsep=0mm]
+\item Można korzystać z własnych (odręcznych) notatek oraz manuala.
+\item W przesyłanych komunikatach nie używamy polskich znaków.
+\item Pliki z programami należy przesłać na Moodle. Nazwy plików podane są przy poszczególnych zadaniach (w miejsce \verb|NazwiskoImie| należy wpisać swoje nazwisko i imię). Proszę nazywać pliki \underline{dokładnie tak} jak jest to opisane przy zadaniu.
+\item Poniższe zadania są \underline{do wyboru}, tj., należy wybrać \underline{jedno} z nich i tylko je rozwiązywać. Zadania przedstawione są w kolejności rosnącego stopnia trudności i rosnącej maksymalnej liczby punktów. Proszę zwrócić uwagę, że:
+\begin{itemize}[itemsep=0mm]
+\item każde z zadań o numerach 1 i 2 wymaga napisania 2 programów (para klient-serwer),
+\item każde z zadań o numerach 3, 4, 5 wymaga napisania 4 programów (dwie pary klient-serwer)!
+\end{itemize}
+\item Wszystkie zadania polegają na napisaniu pary (par) programów klient i serwer komunikujących się przy pomocy rodziny protokołów INET (IPv4); typ protokołu będzie podany w poszczególnych zadaniach.
+\item Zadania powinny być robione \underline{ściśle} zgodnie ze specyfikacją (włączając w to wygląd „interfejsu”, w tym estetyczne wyrównania!)
+– za odstępstwa będą obcinane punkty.
+\item Pamiętajmy o obsłudze najważniejszych błędów (np. błędne dane od użytkownika) oraz o „posprzątaniu”.
+\end{itemize}
+{\bf Zadania}
+\begin{enumerate}
+\item Maks. 11,3 pkt. ($\sim$ ocena 3); nazwy plików: \verb|NazwiskoImie-serwer3.c|, \verb|NazwiskoImie-klient3.c|\\[0.2cm]
+{\bf Typ protokołu}: bezpołączeniowy (UDP).\\[0.2cm]
+{\bf\underline{Serwer}}
+\begin{itemize}[itemsep=0mm]
+\item uruchamiany bez argumentów, zaraz po uruchomieniu wyświetla napis:\verb+ Czekam...+
+\item oczekuje na zgłoszenia klientów na porcie 8888,
+\item użytkownik może wyłączyć serwer poprzez naciśnięcie Ctrl-C; wówczas wyświetla się napis: \verb+Konczymy+,
+\item klienci przysyłają wiadomości w postaci ciągów znaków;
+\item serwer zlicza przysłane wiadomości i każdą wiadomość, wraz z jej numerem, IP klienta i jego numerem portu wyświetla w postaci jak w przykładzie poniżej.
+\end{itemize}
+{\bf\underline{Klient}}
+\begin{itemize}[itemsep=0mm]
+\item uruchamiany z jednym argumentem: IP serwera
+\item wyświetla komunikat: \verb+Podaj wiadomosc do serwera:+ oraz w nowej linii znak zachęty \verb+>+
+\item podaną przez użytkownika wiadomość tekstową przesyła do serwera na port 8888 i kończy pracę.
