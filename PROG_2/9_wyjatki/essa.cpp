@@ -57,7 +57,6 @@ int main(){
   }
 
 
-
   cout << "\n\n\n";
   try{
     f2();
