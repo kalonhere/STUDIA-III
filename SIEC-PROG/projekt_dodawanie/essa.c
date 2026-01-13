@@ -59,7 +59,7 @@ int main(int argc, char *argv[]){
   struct sockaddr_in local_host;
   bzero(&local_host,sizeof(local_host));
   local_host.sin_family = socket_address->sin_family;
-  local_host.sin_port = htons(port);
+  local_host.sin_port = socket_address->sin_port;
   local_host.sin_addr.s_addr = INADDR_ANY;
 
   if((bind(socket_fd,(struct sockaddr *)&local_host,sizeof(local_host))) == -1){
@@ -70,7 +70,10 @@ int main(int argc, char *argv[]){
   if(argc == 4){
     strcat(message_out.nickname,argv[3]);  
   }
-  sendto(socket_fd,&message_out,sizeof(message_out),0,(struct sockaddr*)socket_address,sizeof(&socket_address));
+  int bytes;
+  if((bytes = sendto(socket_fd,&message_out,sizeof(message_out),0,(struct sockaddr*)socket_address,sizeof(&socket_address))) == -1){
+    exitError("sendto first attempt");
+  }
 
   struct sockaddr_in *sender_host;
   socklen_t sender_address_length = sizeof(&sender_host);
