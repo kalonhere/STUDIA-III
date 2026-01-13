@@ -1,0 +1,1 @@
+zamienic nasluchujacy port na 127.0.0.1 chuj wie moze to cos zmieni 
