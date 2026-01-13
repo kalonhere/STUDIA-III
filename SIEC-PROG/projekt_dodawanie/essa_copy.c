@@ -6,8 +6,8 @@
 #include<netdb.h>
 #include<string.h>
 #include<arpa/inet.h>
-struct addrinfo *address_information;
-
+struct addrinfo address_information;
+struct addrinfo *address_information_ptr = &address_information;
 void printSockaddrinData(struct sockaddr_in *socket){
   struct in_addr address = (struct in_addr)socket->sin_addr;
   
@@ -37,7 +37,7 @@ void exitError(char * text){
 }
 
 void extractAddressInfo(char *address, char *port){
-  if((getaddrinfo(address,port,NULL,&address_information)) != 0){
+  if((getaddrinfo(address,port,NULL,&address_information_ptr)) != 0){
     exitError("extractAddressInfo");
   }
 }
@@ -52,13 +52,14 @@ int main(int argc, char *argv[]){
     strcat(nickname,argv[3]);  
   }
   u_short port = atoi(argv[2]);
+  memset(&address_information,0,sizeof(address_information));
   extractAddressInfo(argv[1],argv[2]);
   //get presentation address
-  char presentation_address[address_information->ai_addrlen];
+  char presentation_address[address_information.ai_addrlen];
   struct sockaddr_in *socket_address;
   //memset(socket_address,0,sizeof(*socket_address));
-  socket_address = (struct sockaddr_in*)address_information->ai_addr;
-  inet_ntop(address_information->ai_family,&socket_address->sin_addr,presentation_address,sizeof(presentation_address));
+  socket_address = (struct sockaddr_in*)&address_information.ai_addr;
+  inet_ntop(address_information.ai_family,&socket_address->sin_addr,presentation_address,sizeof(presentation_address));
   printf("Presentation address: %s\n",presentation_address);
   //show port
   printf("port: %u\n",socket_address->sin_port);
@@ -98,7 +99,7 @@ int main(int argc, char *argv[]){
   socklen_t sender_address_length = sizeof(&sender_host);
   struct custom_message message_in;
   while(1){
-    recvfrom(socket_fd,&message_in,sizeof(struct custom_message),0,(struct sockaddr*)sender_host,&sender_address_length);
+    recvfrom(socket_fd,&message_in,sizeof(message_in),0,(struct sockaddr*)sender_host,&sender_address_length);
 
     printf("Message received: Nickname = %s , number = %d",message_in.nickname,message_in.number);
 
@@ -108,7 +109,7 @@ int main(int argc, char *argv[]){
 
 
 
-  freeaddrinfo(address_information);
+  freeaddrinfo(&address_information);
 
   return 0;
 }
