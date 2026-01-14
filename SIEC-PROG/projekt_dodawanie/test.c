@@ -4,6 +4,7 @@
 #include<sys/socket.h>
 #include<netdb.h>
 #include<string.h>
+#include<arpa/inet.h>
 
 
 
@@ -16,8 +17,11 @@ void exitError(char * text){
 int main(int argc, char *argv[]){
   struct sockaddr_in socket_address;
   memset(&socket_address,0,sizeof(socket_address));
+  const char *ip = "127.0.0.1";
+  struct in_addr netip = {0};
+  inet_pton(AF_INET,ip,&netip);
   
-  socket_address.sin_addr.s_addr = INADDR_ANY;
+  socket_address.sin_addr = netip;
   socket_address.sin_port = htons((uint16_t)atoi(argv[2]));
   socket_address.sin_family = AF_INET;
   
