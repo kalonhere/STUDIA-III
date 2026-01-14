@@ -6,12 +6,13 @@
 #include<netdb.h>
 #include<string.h>
 #include<arpa/inet.h>
+#include<time.h>
 
 struct addrinfo *address_information;
 struct sockaddr_in *socket_address;
 struct sockaddr_in local_address;
 
-
+#define CHATSIZE 100
 
 
 void errorExit(char * text){
@@ -29,8 +30,8 @@ void extractAdressInfo(char *address, char* port){
   char presentation_address[address_information->ai_addrlen];
 
   inet_ntop(address_information->ai_family,&socket_address->sin_addr,presentation_address,sizeof(presentation_address));
-  printf("Presentation address: %s\n",presentation_address);
-  printf("Port: %d\n",ntohs(socket_address->sin_port));
+  //printf("Presentation address: %s\n",presentation_address);
+  //printf("Port: %d\n",ntohs(socket_address->sin_port));
 }
 
 void bindLocalAddress(int socket_fd){
@@ -47,21 +48,83 @@ void bindLocalAddress(int socket_fd){
 struct my_message {
   char nickname[64];
   int number;
+  char chat[CHATSIZE];
 };
 
+void sendMessage(int socket_fd,struct my_message message_out, int *start ){
+  int flag = 0;
+  char buffer[CHATSIZE] = "\0";
+  while(1){
+    fgets(buffer,CHATSIZE,stdin);
+    for(int i = 0; i < 100; i++){
+      if(buffer[i] < 48 || buffer[i] > 57){
+        if(strcmp(buffer,"koniec") == 0){
+          if((sendto(socket_fd,&message_out,sizeof(struct my_message), 0, (struct sockaddr*)socket_address,sizeof(*socket_address))) == -1){
+            errorExit("sendto(sendMessage) | end of game");
+          }
+          freeaddrinfo(address_information);
+          exit(EXIT_SUCCESS);
 
-//void sendMessage(int socket_fd){
-//  struct my_message message;
-//  strcat(message.nickname,nick);
-//  message.number = 1;
-//
-//  int bytes;
-//  if((bytes = sendto(socket_fd,&message,sizeof(struct my_message),0,(struct sockaddr*)socket_address,sizeof(*socket_address))) == -1){
-//    errorExit("sendto");
-//  }
-//}
+        }
+        strcpy(message_out.chat,buffer);
+        flag = 1;
+        break;
+      }
+    }
+    if(flag == 0){
+      int new_number = atoi(buffer);
+      if(new_number <= *start){
+        printf("Nie podano poprawnej wartosci liczby, musi byc wieksza od obecnej\n");
+        continue;
+      }else{
+        strcpy(message_out.chat,"\0");
+        message_out.number = new_number;
+      }
+    }
+    flag = 0;
+    if((sendto(socket_fd,&message_out,sizeof(struct my_message), 0, (struct sockaddr*)socket_address,sizeof(*socket_address))) == -1){
+      errorExit("sendto(sendMessage) | chat");
+    }
+    break;
+  }
+}
+
+void receiveMessage(int socket_fd, struct my_message message_in,int *start){
+  while(1){
+    recvfrom(socket_fd,&message_in,sizeof(struct my_message),0,NULL,NULL);
+    if(message_in.number == -1){//first in
+      printf("%s dolaczyl sie do gry.\n",message_in.nickname);
+      *start = rand() % 10 + 1;
+      printf("Losowa wartosc poczatkowa: %d, podaj kolejna wartosc.\n",*start);
+      break;
+    }else if (strlen(message_in.chat) != 0){
+      printf("%s przesyla wiadomosc: %s",message_in.nickname,message_in.chat);
+    }else if(message_in.number == -2){
+      printf("%s zakonczyl gre.\n",message_in.nickname);
+      freeaddrinfo(address_information);
+      exit(EXIT_SUCCESS);
+    }else if(message_in.number == 50){
+      printf("%s podal wartosc 50!\nPrzegrana!",message_in.nickname);
+      freeaddrinfo(address_information);
+      exit(EXIT_SUCCESS);
+    }else{
+      printf("%s podal liczbe: %d, podaj kolejna wartosc",message_in.nickname,message_in.number);
+      *start = message_in.number;
+      break;
+    }//chat
+  }
+
+  
+}
+
+
 
 int main(int argc, char *argv[]){
+  //witamy
+  printf("Witamy w grze '50' wersja B\n");
+
+
+  srand(time(NULL));
   //check argument count
   if((argc < 3) || (argc > 4)){
     printf("\e[1;31mWrong argument count \e[m\n");
@@ -73,7 +136,6 @@ int main(int argc, char *argv[]){
   //extract address information
   extractAdressInfo(argv[1],argv[2]);
   //create socket
-  printf("test");
   int socket_fd;
   if((socket_fd = socket(socket_address->sin_family,SOCK_DGRAM,0)) == -1){
     errorExit("socket");
@@ -82,22 +144,27 @@ int main(int argc, char *argv[]){
   //sendMessage(socket_fd);
 
   //send connection message
-  struct my_message message_out;
+  struct my_message message_out = {0};
   if(argc == 4){
     strcat(message_out.nickname,argv[3]);
+  }else{
+    strcat(message_out.nickname,argv[1]);
   }
-  message_out.number = 1;
+  message_out.number = -1;
   int bytes = 0;
   if((bytes = sendto(socket_fd,&message_out,sizeof(struct my_message),0,(struct sockaddr*)socket_address,sizeof(*socket_address))) == -1){
     errorExit("initializing sendto");
+  }else{
+    printf("Rozpoczynam gre z %s. Napisz 'koniec' by zakonczyc\n",argv[1]);
   }
-
-
+  
+  int start;
   struct my_message message_in = {0};
   while(1){
-    recvfrom(socket_fd,&message_in,sizeof(struct my_message),0,NULL,NULL);
-  }
+    receiveMessage(socket_fd,message_in,&start);
 
+    sendMessage(socket_fd,message_out,&start);
+  } 
   
 
   return 0;
