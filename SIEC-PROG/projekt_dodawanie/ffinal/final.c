@@ -62,6 +62,8 @@ void sendMessage(int socket_fd,struct my_message message_out, int *start ){
 	      printf("wykryto litere\n");
         if(strcmp(buffer,"koniec\n") == 0){
 		message_out.number = -2;
+		strcmp(message_out.chat,"");
+	    //printf("wysylanie zawartosci: nick: %s, czat: %s, number: %d\n",message_out.nickname,message_out.chat,message_out.number);
           if((sendto(socket_fd,&message_out,sizeof(struct my_message), 0, (struct sockaddr*)socket_address,sizeof(*socket_address))) == -1){
             errorExit("sendto(sendMessage) | end of game");
           }
