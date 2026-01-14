@@ -56,8 +56,10 @@ void sendMessage(int socket_fd,struct my_message message_out, int *start ){
   char buffer[CHATSIZE] = "";
   while(1){
     fgets(buffer,CHATSIZE,stdin);
-    for(int i = 0; i < 100; i++){
+    for(int i = 0; i < strlen(buffer)-1; i++){
+	    printf("sprawdzam indeks: %d, zawartosc: %c\n",i,buffer[i]);
       if(buffer[i] < 48 || buffer[i] > 57){
+	      printf("wykryto litere\n");
         if(strcmp(buffer,"koniec") == 0){
           if((sendto(socket_fd,&message_out,sizeof(struct my_message), 0, (struct sockaddr*)socket_address,sizeof(*socket_address))) == -1){
             errorExit("sendto(sendMessage) | end of game");
@@ -72,6 +74,7 @@ void sendMessage(int socket_fd,struct my_message message_out, int *start ){
       }
     }
     if(flag == 0){
+	    printf("flaga 0, atoi, aktualny start = %d\n",*start);
       int new_number = atoi(buffer);
       if(new_number <= *start){
         printf("Nie podano poprawnej wartosci liczby, musi byc wieksza od obecnej\n");
@@ -81,7 +84,15 @@ void sendMessage(int socket_fd,struct my_message message_out, int *start ){
         message_out.number = new_number;
       }
     }
+    if(flag == 1){
+    	flag = 0;
+	    printf("wysylanie zawartosci: nick: %s, czat: %s, number: %d\n",message_out.nickname,message_out.chat,message_out.number);
+	    if((sendto(socket_fd,&message_out,sizeof(struct my_message), 0, (struct sockaddr*)socket_address,sizeof(*socket_address))) == -1);
+	    continue;
+    }
+    
     flag = 0;
+    printf("wysylanie zawartosci: nick: %s, czat: %s, number: %d\n",message_out.nickname,message_out.chat,message_out.number);
     if((sendto(socket_fd,&message_out,sizeof(struct my_message), 0, (struct sockaddr*)socket_address,sizeof(*socket_address))) == -1){
       errorExit("sendto(sendMessage) | chat");
     }
@@ -97,6 +108,7 @@ void receiveMessage(int socket_fd, struct my_message message_in,int *start){
       printf("%s dolaczyl sie do gry.\n",message_in.nickname);
       *start = rand() % 10 + 1;
       printf("Losowa wartosc poczatkowa: %d, podaj kolejna wartosc.\n",*start);
+      message_in.number = 0;
       break;
     }else if (strlen(message_in.chat) != 0){
       printf("%s przesyla wiadomosc: %s",message_in.nickname,message_in.chat);
@@ -154,6 +166,7 @@ int main(int argc, char *argv[]){
   if((bytes = sendto(socket_fd,&message_out,sizeof(struct my_message),0,(struct sockaddr*)socket_address,sizeof(*socket_address))) == -1){
     errorExit("initializing sendto");
   }else{
+	  message_out.number = 0;
     char presentation_address[100] = "";
     inet_ntop(AF_INET,&socket_address->sin_addr,presentation_address,sizeof(presentation_address));
     printf("zadanie wyslano do: %s",presentation_address);
