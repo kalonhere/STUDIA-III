@@ -12,7 +12,7 @@ void exitError(char * text){
   printf("\e[1;31m===ERROR===\e[m\n");
   perror(text);
   exit(EXIT_FAILURE);
-}
+};
 
 int main(int argc, char *argv[]){
   struct sockaddr_in socket_address;
