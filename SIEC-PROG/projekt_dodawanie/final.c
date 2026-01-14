@@ -89,6 +89,7 @@ void sendMessage(int socket_fd,struct my_message message_out, int *start ){
   }
 }
 
+
 void receiveMessage(int socket_fd, struct my_message message_in,int *start){
   while(1){
     recvfrom(socket_fd,&message_in,sizeof(struct my_message),0,NULL,NULL);
@@ -147,14 +148,15 @@ int main(int argc, char *argv[]){
   struct my_message message_out = {0};
   if(argc == 4){
     strcat(message_out.nickname,argv[3]);
-  }else{
-    strcat(message_out.nickname,argv[1]);
   }
   message_out.number = -1;
   int bytes = 0;
   if((bytes = sendto(socket_fd,&message_out,sizeof(struct my_message),0,(struct sockaddr*)socket_address,sizeof(*socket_address))) == -1){
     errorExit("initializing sendto");
   }else{
+    char presentation_address[100] = "\0";
+    inet_ntop(AF_INET,&socket_address->sin_addr,presentation_address,sizeof(presentation_address));
+    printf("zadanie wyslano do: %s",presentation_address);
     printf("Rozpoczynam gre z %s. Napisz 'koniec' by zakonczyc\n",argv[1]);
   }
   
