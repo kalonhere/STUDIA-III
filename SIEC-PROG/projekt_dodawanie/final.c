@@ -53,7 +53,7 @@ struct my_message {
 
 void sendMessage(int socket_fd,struct my_message message_out, int *start ){
   int flag = 0;
-  char buffer[CHATSIZE] = "\0";
+  char buffer[CHATSIZE] = "";
   while(1){
     fgets(buffer,CHATSIZE,stdin);
     for(int i = 0; i < 100; i++){
@@ -77,7 +77,7 @@ void sendMessage(int socket_fd,struct my_message message_out, int *start ){
         printf("Nie podano poprawnej wartosci liczby, musi byc wieksza od obecnej\n");
         continue;
       }else{
-        strcpy(message_out.chat,"\0");
+        strcpy(message_out.chat,"");
         message_out.number = new_number;
       }
     }
@@ -154,7 +154,7 @@ int main(int argc, char *argv[]){
   if((bytes = sendto(socket_fd,&message_out,sizeof(struct my_message),0,(struct sockaddr*)socket_address,sizeof(*socket_address))) == -1){
     errorExit("initializing sendto");
   }else{
-    char presentation_address[100] = "\0";
+    char presentation_address[100] = "";
     inet_ntop(AF_INET,&socket_address->sin_addr,presentation_address,sizeof(presentation_address));
     printf("zadanie wyslano do: %s",presentation_address);
     printf("Rozpoczynam gre z %s. Napisz 'koniec' by zakonczyc\n",argv[1]);
