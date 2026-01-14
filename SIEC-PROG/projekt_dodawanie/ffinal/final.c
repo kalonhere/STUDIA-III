@@ -60,7 +60,8 @@ void sendMessage(int socket_fd,struct my_message message_out, int *start ){
 	    printf("sprawdzam indeks: %d, zawartosc: %c\n",i,buffer[i]);
       if(buffer[i] < 48 || buffer[i] > 57){
 	      printf("wykryto litere\n");
-        if(strcmp(buffer,"koniec") == 0){
+        if(strcmp(buffer,"koniec\n") == 0){
+		message_out.number = -2;
           if((sendto(socket_fd,&message_out,sizeof(struct my_message), 0, (struct sockaddr*)socket_address,sizeof(*socket_address))) == -1){
             errorExit("sendto(sendMessage) | end of game");
           }
