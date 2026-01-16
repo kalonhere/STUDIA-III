@@ -27,8 +27,6 @@ void extractAdressInfo(char *address, char* port){
     errorExit("getaddrinfo");
   }
   socket_address = (struct sockaddr_in*)address_information->ai_addr;
-  //char presentation_address[address_information->ai_addrlen];
-  //inet_ntop(address_information->ai_family,&socket_address->sin_addr,presentation_address,sizeof(presentation_address));
 }
 
 void bindLocalAddress(int socket_fd){
@@ -54,8 +52,10 @@ void sendMessage(int socket_fd,struct my_message message_out, int *start ){
   while(1){
     fgets(buffer,CHATSIZE,stdin);
     for(int i = 0; i < strlen(buffer)-1; i++){
+      //sprawdzenie czy znajduje sie cos poza liczba
       if(buffer[i] < 48 || buffer[i] > 57){
         if(strcmp(buffer,"koniec\n") == 0){
+          //jezeli wiadomosc to koniec
             message_out.number = -2;
             strcpy(message_out.chat,"");
           if((sendto(socket_fd,&message_out,sizeof(struct my_message), 0, (struct sockaddr*)socket_address,sizeof(*socket_address))) == -1){
@@ -65,35 +65,40 @@ void sendMessage(int socket_fd,struct my_message message_out, int *start ){
           exit(EXIT_SUCCESS);
 
         }
+        //jezeli wiadomosc != 'koniec'. To skopiuj wiadomosc
         strcpy(message_out.chat,buffer);
         flag = 1;
         break;
       }
     }
     if(flag == 0){
+      //jezeli podano niepoprawna liczbe
       int new_number = atoi(buffer);
       if((new_number <= *start) || (new_number > 50) || ((new_number - *start )) > 10){
         printf("Nie podano poprawnej wartosci liczby, musi byc wieksza od obecnej wartosci oraz mniejsza lub rowna roznicy 10\n");
         continue;
       }else{
+        //jezeli podano poprawna liczbe, skopiuj do wiadomosci
         strcpy(message_out.chat,"");
         message_out.number = new_number;
       }
     }
     if(flag == 1){
+      //wyslanie wiadomosci chatu oraz przejscie na poczatek petli while
     	flag = 0;
 	    if((sendto(socket_fd,&message_out,sizeof(struct my_message), 0, (struct sockaddr*)socket_address,sizeof(*socket_address))) == -1){
         errorExit("sendto(sendMessage) | chat");
       }
       continue;
     }
-    
+    //wyslanie nowej liczby
     flag = 0;
     if((sendto(socket_fd,&message_out,sizeof(struct my_message), 0, (struct sockaddr*)socket_address,sizeof(*socket_address))) == -1){
       errorExit("sendto(sendMessage) | chat");
     }
+    //jezeli liczba == 50. Wygrana
     if(message_out.number == 50){
-      printf("Brawo! Wygrales!");
+      printf("Brawo! Wygrales!\n");
       freeaddrinfo(address_information);
       exit(EXIT_SUCCESS);
     }
@@ -105,6 +110,7 @@ void sendMessage(int socket_fd,struct my_message message_out, int *start ){
 void receiveMessage(int socket_fd, struct my_message message_in,int *start){
   while(1){
     recvfrom(socket_fd,&message_in,sizeof(struct my_message),0,NULL,NULL);
+    //odebranie wiadomosci potwierdzajacej dolaczenie
     if(message_in.number == -1){//first in
       printf("\e[1;32m%s\e[m dolaczyl sie do gry.\n",message_in.nickname);
       *start = rand() % 10 + 1;
@@ -112,16 +118,20 @@ void receiveMessage(int socket_fd, struct my_message message_in,int *start){
       message_in.number = 0;
       break;
     }else if (strlen(message_in.chat) != 0){
+      //odebranie wiadomosci chatu
       printf("\e[1;32m%s\e[m przesyla wiadomosc: \e[1;34m%s\e[m",message_in.nickname,message_in.chat);
     }else if(message_in.number == -2){
+      //odebranie wiadomosci konczacej gre
       printf("\e[1;32m%s\e[m zakonczyl gre.\n",message_in.nickname);
       freeaddrinfo(address_information);
       exit(EXIT_SUCCESS);
     }else if(message_in.number == 50){
-      printf("\e[1;32m%s\e[m podal wartosc \e[1;34m50\e[m! Przegrana!",message_in.nickname);
+      //odebranie liczby 50
+      printf("\e[1;32m%s\e[m podal wartosc \e[1;34m50\e[m! Przegrana!\n",message_in.nickname);
       freeaddrinfo(address_information);
       exit(EXIT_SUCCESS);
     }else{
+      //odebranie liczby != 50
       printf("\e[1;32m%s\e[m podal liczbe: \e[1;34m%d\e[m, podaj kolejna wartosc.\n",message_in.nickname,message_in.number);
       *start = message_in.number;
       break;
@@ -139,17 +149,15 @@ int main(int argc, char *argv[]){
 
 
   srand(time(NULL));
-  //check argument count
+  //sprawdz ilosc argumentow
   if((argc < 3) || (argc > 4)){
     printf("\e[1;31mZla ilosc argumentow\e[m\nUzycie: adres port [nick]\n");
     return 0;
   }
-  //assign nickname
-  //create variables 
   
-  //extract address information
+  //wyluskaj informacje na temat adresu adresata 
   extractAdressInfo(argv[1],argv[2]);
-  //create socket
+  //stworzenie socketu
   int socket_fd;
   if((socket_fd = socket(socket_address->sin_family,SOCK_DGRAM,0)) == -1){
     errorExit("socket");
@@ -157,27 +165,29 @@ int main(int argc, char *argv[]){
   bindLocalAddress(socket_fd);
 
 
-  //send connection message
+  //interpretacja nick/adres
   struct my_message message_out = {0};
   if(argc == 4){
     strcat(message_out.nickname,argv[3]);
   }else {
     strcat(message_out.nickname,argv[1]);
   }
+  //wysylanie wiadomosci o dolaczeniu do gry
   message_out.number = -1;
   int bytes = 0;
   if((bytes = sendto(socket_fd,&message_out,sizeof(struct my_message),0,(struct sockaddr*)socket_address,sizeof(*socket_address))) == -1){
     errorExit("initializing sendto");
   }else{
+    //reset wartosci liczby w strukturze wiadomosci
 	  message_out.number = 0;
-    char presentation_address[100] = "";
-    inet_ntop(AF_INET,&socket_address->sin_addr,presentation_address,sizeof(presentation_address));
     printf("Rozpoczynam gre z \e[1;32m%s\e[m. Napisz '\e[1;31mkoniec\e[m' by zakonczyc\n",argv[1]);
   }
   
+  //zmienna przechowujaca aktualna liczbe
   int start;
   struct my_message message_in = {0};
   while(1){
+    //petla gry
     receiveMessage(socket_fd,message_in,&start);
 
     sendMessage(socket_fd,message_out,&start);
