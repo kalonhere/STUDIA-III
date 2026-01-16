@@ -27,9 +27,8 @@ void extractAdressInfo(char *address, char* port){
     errorExit("getaddrinfo");
   }
   socket_address = (struct sockaddr_in*)address_information->ai_addr;
-  char presentation_address[address_information->ai_addrlen];
-
-  inet_ntop(address_information->ai_family,&socket_address->sin_addr,presentation_address,sizeof(presentation_address));
+  //char presentation_address[address_information->ai_addrlen];
+  //inet_ntop(address_information->ai_family,&socket_address->sin_addr,presentation_address,sizeof(presentation_address));
 }
 
 void bindLocalAddress(int socket_fd){
@@ -73,7 +72,7 @@ void sendMessage(int socket_fd,struct my_message message_out, int *start ){
     }
     if(flag == 0){
       int new_number = atoi(buffer);
-      if(new_number <= *start){
+      if(new_number <= *start || new_number <= 0 || ((new_number - *start )) >= 10){
         printf("Nie podano poprawnej wartosci liczby, musi byc wieksza od obecnej\n");
         continue;
       }else{
@@ -157,6 +156,8 @@ int main(int argc, char *argv[]){
   struct my_message message_out = {0};
   if(argc == 4){
     strcat(message_out.nickname,argv[3]);
+  }else {
+    strcat(message_out.nickname,argv[1]);
   }
   message_out.number = -1;
   int bytes = 0;
