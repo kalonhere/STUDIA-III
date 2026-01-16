@@ -73,7 +73,7 @@ void sendMessage(int socket_fd,struct my_message message_out, int *start ){
     if(flag == 0){
       int new_number = atoi(buffer);
       if(new_number <= *start || new_number <= 0 || ((new_number - *start )) >= 10){
-        printf("Nie podano poprawnej wartosci liczby, musi byc wieksza od obecnej\n");
+        printf("Nie podano poprawnej wartosci liczby, musi byc wieksza od obecnej wartosci oraz mniejsza od roznicy 10\n");
         continue;
       }else{
         strcpy(message_out.chat,"");
@@ -100,6 +100,8 @@ void sendMessage(int socket_fd,struct my_message message_out, int *start ){
 void receiveMessage(int socket_fd, struct my_message message_in,int *start){
   while(1){
     recvfrom(socket_fd,&message_in,sizeof(struct my_message),0,NULL,NULL);
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);
     if(message_in.number == -1){//first in
       printf("\e[1;32m%s\e[m dolaczyl sie do gry.\n",message_in.nickname);
       *start = rand() % 10 + 1;
@@ -136,7 +138,7 @@ int main(int argc, char *argv[]){
   srand(time(NULL));
   //check argument count
   if((argc < 3) || (argc > 4)){
-    printf("\e[1;31mWrong argument count \e[m\n");
+    printf("\e[1;31mZla ilosc argumentow\e[m\nUzycie: adres port [nick]\n");
     return 0;
   }
   //assign nickname
