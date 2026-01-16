@@ -101,23 +101,23 @@ void receiveMessage(int socket_fd, struct my_message message_in,int *start){
   while(1){
     recvfrom(socket_fd,&message_in,sizeof(struct my_message),0,NULL,NULL);
     if(message_in.number == -1){//first in
-      printf("%s dolaczyl sie do gry.\n",message_in.nickname);
+      printf("\e[1;32m%s\e[m dolaczyl sie do gry.\n",message_in.nickname);
       *start = rand() % 10 + 1;
-      printf("Losowa wartosc poczatkowa: %d, podaj kolejna wartosc.\n",*start);
+      printf("Losowa wartosc poczatkowa: \e[1;34m%d\e[m, podaj kolejna wartosc.\n",*start);
       message_in.number = 0;
       break;
     }else if (strlen(message_in.chat) != 0){
-      printf("%s przesyla wiadomosc: %s",message_in.nickname,message_in.chat);
+      printf("\e[1;32m%s\e[m przesyla wiadomosc: \e[1;34m%s\e[m",message_in.nickname,message_in.chat);
     }else if(message_in.number == -2){
-      printf("%s zakonczyl gre.\n",message_in.nickname);
+      printf("\e[1;32m%s\e[m zakonczyl gre.\n",message_in.nickname);
       freeaddrinfo(address_information);
       exit(EXIT_SUCCESS);
     }else if(message_in.number == 50){
-      printf("%s podal wartosc 50!\nPrzegrana!",message_in.nickname);
+      printf("\e[1;32m%s\e[m podal wartosc \e[1;34m50\e[m!\nPrzegrana!",message_in.nickname);
       freeaddrinfo(address_information);
       exit(EXIT_SUCCESS);
     }else{
-      printf("%s podal liczbe: %d, podaj kolejna wartosc",message_in.nickname,message_in.number);
+      printf("\e[1;32m%s\e[m podal liczbe: \e[1;34m%d\e[m, podaj kolejna wartosc",message_in.nickname,message_in.number);
       *start = message_in.number;
       break;
     }//chat
@@ -130,7 +130,7 @@ void receiveMessage(int socket_fd, struct my_message message_in,int *start){
 
 int main(int argc, char *argv[]){
   //witamy
-  printf("Witamy w grze '50' wersja B\n");
+  printf("\e[1;30;104m====Witamy w grze '50' wersja B====\e[m\n");
 
 
   srand(time(NULL));
@@ -165,7 +165,7 @@ int main(int argc, char *argv[]){
 	  message_out.number = 0;
     char presentation_address[100] = "";
     inet_ntop(AF_INET,&socket_address->sin_addr,presentation_address,sizeof(presentation_address));
-    printf("Rozpoczynam gre z %s. Napisz 'koniec' by zakonczyc\n",argv[1]);
+    printf("Rozpoczynam gre z \e[1;32m%s\e[m. Napisz '\e[1;31mkoniec\e[m' by zakonczyc\n",argv[1]);
   }
   
   int start;
