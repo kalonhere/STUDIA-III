@@ -100,8 +100,6 @@ void sendMessage(int socket_fd,struct my_message message_out, int *start ){
 void receiveMessage(int socket_fd, struct my_message message_in,int *start){
   while(1){
     recvfrom(socket_fd,&message_in,sizeof(struct my_message),0,NULL,NULL);
-    int c;
-    while ((c = getchar()) != '\n' && c != EOF);
     if(message_in.number == -1){//first in
       printf("\e[1;32m%s\e[m dolaczyl sie do gry.\n",message_in.nickname);
       *start = rand() % 10 + 1;
