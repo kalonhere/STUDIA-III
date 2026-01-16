@@ -108,7 +108,7 @@ void receiveMessage(int socket_fd, struct my_message message_in,int *start){
       message_in.number = 0;
       break;
     }else if (strlen(message_in.chat) != 0){
-      printf("\e[1;32m%s\e[m przesyla wiadomosc: \e[1;34m%s\e[m test tutaj",message_in.nickname,message_in.chat);
+      printf("\e[1;32m%s\e[m przesyla wiadomosc: \e[1;34m%s\e[m",message_in.nickname,message_in.chat);
     }else if(message_in.number == -2){
       printf("\e[1;32m%s\e[m zakonczyl gre.\n",message_in.nickname);
       freeaddrinfo(address_information);
@@ -118,7 +118,7 @@ void receiveMessage(int socket_fd, struct my_message message_in,int *start){
       freeaddrinfo(address_information);
       exit(EXIT_SUCCESS);
     }else{
-      printf("\e[1;32m%s\e[m podal liczbe: \e[1;34m%d\e[m, podaj kolejna wartosc",message_in.nickname,message_in.number);
+      printf("\e[1;32m%s\e[m podal liczbe: \e[1;34m%d\e[m, podaj kolejna wartosc.\n",message_in.nickname,message_in.number);
       *start = message_in.number;
       break;
     }//chat
@@ -151,7 +151,7 @@ int main(int argc, char *argv[]){
     errorExit("socket");
   } 
   bindLocalAddress(socket_fd);
-  //sendMessage(socket_fd);
+
 
   //send connection message
   struct my_message message_out = {0};
