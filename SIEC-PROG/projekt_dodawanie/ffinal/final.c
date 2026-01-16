@@ -56,7 +56,7 @@ void sendMessage(int socket_fd,struct my_message message_out, int *start ){
   char buffer[CHATSIZE] = "";
   while(1){
     fgets(buffer,CHATSIZE,stdin);
-    for(int i = 0; i < 100; i++){
+    for(int i = 0; i < strlen(buffer); i++){
       if(buffer[i] < 48 || buffer[i] > 57){
         if(strcmp(buffer,"koniec") == 0){
           if((sendto(socket_fd,&message_out,sizeof(struct my_message), 0, (struct sockaddr*)socket_address,sizeof(*socket_address))) == -1){
