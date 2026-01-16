@@ -84,8 +84,9 @@ void sendMessage(int socket_fd,struct my_message message_out, int *start ){
     if(flag == 1){
     	flag = 0;
 	    if((sendto(socket_fd,&message_out,sizeof(struct my_message), 0, (struct sockaddr*)socket_address,sizeof(*socket_address))) == -1){
-        continue;
+        errorExit("sendto(sendMessage) | chat");
       }
+      continue;
     }
     
     flag = 0;
