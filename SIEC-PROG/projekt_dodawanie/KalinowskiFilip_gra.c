@@ -18,6 +18,7 @@ struct sockaddr_in local_address;
 void errorExit(char * text){
   printf("\e[1;31m=====ERROR=====\e[m\n");
   perror(text);
+  freeaddrinfo(address_information);
   exit(EXIT_FAILURE);
 }
 
@@ -25,6 +26,15 @@ void errorExit(char * text){
 void extractAdressInfo(char *address, char* port){
   if((getaddrinfo(address,port,NULL,&address_information)) != 0){
     errorExit("getaddrinfo");
+  }
+  //sprawdz poprawny adres ip 
+  struct sockaddr_in test;
+  int check;
+  if((check = (inet_pton(AF_INET,address,&test))) <= 0){
+    printf("\e[1;31m=====ERROR=====\e[m\n");
+    printf("Niepoprawny adres IP\n");
+    freeaddrinfo(address_information);
+    exit(EXIT_FAILURE);
   }
   socket_address = (struct sockaddr_in*)address_information->ai_addr;
 }
@@ -155,6 +165,15 @@ int main(int argc, char *argv[]){
     return 0;
   }
   
+  //sprawdz poprawny numer portu
+  if((atoi(argv[2])) > 65535){
+    printf("\e[1;31m=====ERROR=====\e[m\n");
+    printf("Niepoprawny numer portu\n");
+    freeaddrinfo(address_information);
+    exit(EXIT_FAILURE);
+
+  }
+
   //wyluskaj informacje na temat adresu adresata 
   extractAdressInfo(argv[1],argv[2]);
   //stworzenie socketu
