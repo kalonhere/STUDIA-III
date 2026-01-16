@@ -72,8 +72,8 @@ void sendMessage(int socket_fd,struct my_message message_out, int *start ){
     }
     if(flag == 0){
       int new_number = atoi(buffer);
-      if(new_number <= *start || new_number <= 0 || ((new_number - *start )) >= 10){
-        printf("Nie podano poprawnej wartosci liczby, musi byc wieksza od obecnej wartosci oraz mniejsza od roznicy 10\n");
+      if((new_number <= *start) || (new_number > 50) || ((new_number - *start )) > 10){
+        printf("Nie podano poprawnej wartosci liczby, musi byc wieksza od obecnej wartosci oraz mniejsza lub rowna roznicy 10\n");
         continue;
       }else{
         strcpy(message_out.chat,"");
@@ -91,6 +91,11 @@ void sendMessage(int socket_fd,struct my_message message_out, int *start ){
     flag = 0;
     if((sendto(socket_fd,&message_out,sizeof(struct my_message), 0, (struct sockaddr*)socket_address,sizeof(*socket_address))) == -1){
       errorExit("sendto(sendMessage) | chat");
+    }
+    if(message_out.number == 50){
+      printf("Brawo! Wygrales!");
+      freeaddrinfo(address_information);
+      exit(EXIT_SUCCESS);
     }
     break;
   }
@@ -113,7 +118,7 @@ void receiveMessage(int socket_fd, struct my_message message_in,int *start){
       freeaddrinfo(address_information);
       exit(EXIT_SUCCESS);
     }else if(message_in.number == 50){
-      printf("\e[1;32m%s\e[m podal wartosc \e[1;34m50\e[m!\nPrzegrana!",message_in.nickname);
+      printf("\e[1;32m%s\e[m podal wartosc \e[1;34m50\e[m! Przegrana!",message_in.nickname);
       freeaddrinfo(address_information);
       exit(EXIT_SUCCESS);
     }else{
