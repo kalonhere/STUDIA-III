@@ -12,6 +12,7 @@ struct addrinfo *address_information;
 struct sockaddr_in *socket_address;
 struct sockaddr_in local_address;
 
+
 #define CHATSIZE 100
 
 
@@ -23,20 +24,14 @@ void errorExit(char * text){
 }
 
 
-void extractAdressInfo(char *address, char* port){
-  if((getaddrinfo(address,port,NULL,&address_information)) != 0){
+void extractAdressInfo(char **address, char* port){
+  if((getaddrinfo(address[1],port,NULL,&address_information)) != 0){
     errorExit("getaddrinfo");
   }
   //sprawdz poprawny adres ip 
-  struct sockaddr_in test;
-  int check;
-  if((check = (inet_pton(AF_INET,address,&test))) <= 0){
-    printf("\e[1;31m=====ERROR=====\e[m\n");
-    printf("Niepoprawny adres IP\n");
-    freeaddrinfo(address_information);
-    exit(EXIT_FAILURE);
-  }
   socket_address = (struct sockaddr_in*)address_information->ai_addr;
+  address[1] = inet_ntoa(socket_address->sin_addr);
+
 }
 
 void bindLocalAddress(int socket_fd){
@@ -175,7 +170,7 @@ int main(int argc, char *argv[]){
   }
 
   //wyluskaj informacje na temat adresu adresata 
-  extractAdressInfo(argv[1],argv[2]);
+  extractAdressInfo(argv,argv[2]);
   //stworzenie socketu
   int socket_fd;
   if((socket_fd = socket(socket_address->sin_family,SOCK_DGRAM,0)) == -1){
