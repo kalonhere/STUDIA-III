@@ -24,13 +24,12 @@ void errorExit(char * text){
 }
 
 
-void extractAdressInfo(char **address, char* port){
-  if((getaddrinfo(address[1],port,NULL,&address_information)) != 0){
+void extractAdressInfo(char *address, char* port){
+  if((getaddrinfo(address,port,NULL,&address_information)) != 0){
     errorExit("getaddrinfo");
   }
   //sprawdz poprawny adres ip 
   socket_address = (struct sockaddr_in*)address_information->ai_addr;
-  address[1] = inet_ntoa(socket_address->sin_addr);
 
 }
 
@@ -115,6 +114,12 @@ void sendMessage(int socket_fd,struct my_message message_out, int *start ){
 void receiveMessage(int socket_fd, struct my_message message_in,int *start,int *nick_flag){
   while(1){
     recvfrom(socket_fd,&message_in,sizeof(struct my_message),0,NULL,NULL);
+    //ustalenie nickname
+    if(*nick_flag == 0){
+      if(strlen(message_in.nickname) == 0){
+        strcat(message_in.nickname,inet_ntoa(socket_address->sin_addr));
+      }
+    }
     //odebranie wiadomosci potwierdzajacej dolaczenie
     if(message_in.number == -1){//first in
       printf("\e[1;32m%s\e[m dolaczyl sie do gry.\n",message_in.nickname);
@@ -176,7 +181,7 @@ int main(int argc, char *argv[]){
 
 
   //wyluskaj informacje na temat adresu adresata 
-  extractAdressInfo(argv,argv[2]);
+  extractAdressInfo(argv[1],argv[2]);
   //stworzenie socketu
   int socket_fd;
   if((socket_fd = socket(socket_address->sin_family,SOCK_DGRAM,0)) == -1){
@@ -201,7 +206,7 @@ int main(int argc, char *argv[]){
   }else{
     //reset wartosci liczby w strukturze wiadomosci
 	  message_out.number = 0;
-    printf("Rozpoczynam gre z \e[1;32m%s\e[m. Napisz '\e[1;31mkoniec\e[m' by zakonczyc\n",argv[1]);
+    printf("Rozpoczynam gre z \e[1;32m%s\e[m. Napisz '\e[1;31mkoniec\e[m' by zakonczyc\n",inet_ntoa(socket_address->sin_addr));
   }
   
   //zmienna przechowujaca aktualna liczbe
