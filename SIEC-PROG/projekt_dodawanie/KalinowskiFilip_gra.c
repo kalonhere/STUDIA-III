@@ -112,7 +112,7 @@ void sendMessage(int socket_fd,struct my_message message_out, int *start ){
 }
 
 
-void receiveMessage(int socket_fd, struct my_message message_in,int *start){
+void receiveMessage(int socket_fd, struct my_message message_in,int *start,int *nick_flag){
   while(1){
     recvfrom(socket_fd,&message_in,sizeof(struct my_message),0,NULL,NULL);
     //odebranie wiadomosci potwierdzajacej dolaczenie
@@ -153,14 +153,8 @@ int main(int argc, char *argv[]){
   //witamy
   printf("\e[1;30;104m====Witamy w grze '50' wersja B====\e[m\n");
   
-  //interpretacja nick/adres
-  struct my_message message_out = {0};
-  if(argc == 4){
-    strcat(message_out.nickname,argv[3]);
-  }else {
-    strcat(message_out.nickname,argv[1]);
-  }
-
+  //zapisanie adresu drugiego gracza
+  
 
 
   srand(time(NULL));
@@ -191,6 +185,11 @@ int main(int argc, char *argv[]){
   bindLocalAddress(socket_fd);
 
 
+  //interpretacja nick/adres
+  struct my_message message_out = {0};
+  if(argc == 4){
+    strcat(message_out.nickname,argv[3]);
+  }
 
 
 
@@ -208,9 +207,11 @@ int main(int argc, char *argv[]){
   //zmienna przechowujaca aktualna liczbe
   int start;
   struct my_message message_in = {0};
+  strcat(message_in.nickname,argv[1]);
   while(1){
     //petla gry
-    receiveMessage(socket_fd,message_in,&start);
+    int nick_flag = 0;
+    receiveMessage(socket_fd,message_in,&start,&nick_flag);
 
     sendMessage(socket_fd,message_out,&start);
   } 
