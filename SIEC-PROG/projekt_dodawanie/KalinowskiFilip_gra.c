@@ -212,7 +212,6 @@ int main(int argc, char *argv[]){
   //zmienna przechowujaca aktualna liczbe
   int start;
   struct my_message message_in = {0};
-  strcat(message_in.nickname,argv[1]);
   while(1){
     //petla gry
     int nick_flag = 0;
