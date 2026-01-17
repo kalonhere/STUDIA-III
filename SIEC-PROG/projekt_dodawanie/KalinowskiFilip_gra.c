@@ -149,9 +149,17 @@ void receiveMessage(int socket_fd, struct my_message message_in,int *start){
 
 
 int main(int argc, char *argv[]){
+
   //witamy
   printf("\e[1;30;104m====Witamy w grze '50' wersja B====\e[m\n");
 
+  //interpretacja nick/adres
+  struct my_message message_out = {0};
+  if(argc == 4){
+    strcat(message_out.nickname,argv[3]);
+  }else {
+    strcat(message_out.nickname,argv[1]);
+  }
 
   srand(time(NULL));
   //sprawdz ilosc argumentow
@@ -179,13 +187,7 @@ int main(int argc, char *argv[]){
   bindLocalAddress(socket_fd);
 
 
-  //interpretacja nick/adres
-  struct my_message message_out = {0};
-  if(argc == 4){
-    strcat(message_out.nickname,argv[3]);
-  }else {
-    strcat(message_out.nickname,argv[1]);
-  }
+
   //wysylanie wiadomosci o dolaczeniu do gry
   message_out.number = -1;
   int bytes = 0;
