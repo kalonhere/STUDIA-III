@@ -153,13 +153,7 @@ int main(int argc, char *argv[]){
   //witamy
   printf("\e[1;30;104m====Witamy w grze '50' wersja B====\e[m\n");
 
-  //interpretacja nick/adres
-  struct my_message message_out = {0};
-  if(argc == 4){
-    strcat(message_out.nickname,argv[3]);
-  }else {
-    strcat(message_out.nickname,argv[1]);
-  }
+
 
   srand(time(NULL));
   //sprawdz ilosc argumentow
@@ -177,6 +171,8 @@ int main(int argc, char *argv[]){
 
   }
 
+
+
   //wyluskaj informacje na temat adresu adresata 
   extractAdressInfo(argv,argv[2]);
   //stworzenie socketu
@@ -186,6 +182,14 @@ int main(int argc, char *argv[]){
   } 
   bindLocalAddress(socket_fd);
 
+
+  //interpretacja nick/adres
+  struct my_message message_out = {0};
+  if(argc == 4){
+    strcat(message_out.nickname,argv[3]);
+  }else {
+    inet_ntop(AF_INET,&local_address.sin_addr,message_out.nickname,INET_ADDRSTRLEN);
+  }
 
 
   //wysylanie wiadomosci o dolaczeniu do gry
