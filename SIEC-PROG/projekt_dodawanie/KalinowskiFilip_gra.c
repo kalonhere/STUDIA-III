@@ -28,7 +28,6 @@ void extractAdressInfo(char *address, char* port){
   if((getaddrinfo(address,port,NULL,&address_information)) != 0){
     errorExit("getaddrinfo");
   }
-  //sprawdz poprawny adres ip 
   socket_address = (struct sockaddr_in*)address_information->ai_addr;
 
 }
@@ -118,6 +117,7 @@ void receiveMessage(int socket_fd, struct my_message message_in,int *start,int *
     if(*nick_flag == 0){
       if(strlen(message_in.nickname) == 0){
         strcat(message_in.nickname,inet_ntoa(socket_address->sin_addr));
+        *nick_flag = 1;
       }
     }
     //odebranie wiadomosci potwierdzajacej dolaczenie
@@ -212,9 +212,10 @@ int main(int argc, char *argv[]){
   //zmienna przechowujaca aktualna liczbe
   int start;
   struct my_message message_in = {0};
+  int nick_flag = 0;
   while(1){
     //petla gry
-    int nick_flag = 0;
+
     receiveMessage(socket_fd,message_in,&start,&nick_flag);
 
     sendMessage(socket_fd,message_out,&start);
