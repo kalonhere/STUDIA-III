@@ -34,8 +34,13 @@ class tree{
 
 
       }else{
-        cout << "Blad dodania wezla (wezel posiada taka sama wartosc)";
+        cout << "Blad dodania wezla (wezel posiada taka sama wartosc)\n";
+        return nullptr;
       }
+    }//insertNode
+
+    node *findNode(int x){
+
     }
 };
 
