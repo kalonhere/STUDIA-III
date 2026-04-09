@@ -1,0 +1,60 @@
+        XZ UTILS BACKDOOR
+
+Male co nieco:
+
+XZ Utils - (open source) zbiór darmowych bezstratnych narzedzi kompresji danych
+  z poziomu linii polecen.
+Jest on dostepny na systemach Linux oraz od wersji 5.0 i dalej
+  równierz na systemach windows.
+Dla jasnosci, w dalszej czesci bazowac bede na systemach opartych
+  o linuxie
+Bardzo czesto jest on instalowany razem z podstawowymi pakietami systemu
+Najwazniejsza, jego cechą, jest to, że program XZ, jest posrednio
+zaleznoscia (dependency) dla programu OpenSSH, ktory jest jednym
+z najwazniejszych programow wspolczesnych systemow, a tym bardziej
+serwerow.
+
+Czym Jest OpenSSH?
+
+OpenSSH jest pakietem pozwalajacym na tworzenie bezpiecznych,
+  szyfrowanych zdalnych polaczen pomiedzy klientami. Najczesciej
+  wykorzystywany jest jako zdalne polaczenie z roznymi typami serwerow,
+  (protokół ssh) co pozwala nam na egzekucje kodu na zdalnej maszynie.
+Przykladem jest sam wydzial WMiI, gdzie za pomoca ssh, mozemy sie
+  polaczyc z serwerami: ultra60, aleks-2, sxterm etc.
+Samo polaczenie jest szyfrowane asymetrycznie, tzn. z wykorzystaniem 
+  kluczy publicznych i prywatnych.
+
+Szyfrowanie Asymetryczne:
+Szyfrowanie asymetryczne opiera się na posiadaniu dwóch kluczy.
+  Kazdy uzytkownik posiada swój klucz publiczny oraz prywatny.
+  Prosty scenariusz szyfrowania wiadomosci:
+    1.Nadawca pisze wiadomosc w postacji jawnej. (tekst,plik)
+    2.Nadawca szyfruje wiadomosc kluczem publicznym ADRESATA.
+    3.Adresat dostaje zaszyfrowana wiadomosc, którą deszyfruje za pomocą swojego klucza PRYWATNEGO.
+    4.Zyskujemy wiadomosc w postaci jawnej.
+  
+  [veritasium, kolorki]
+
+
+BACKDOOR
+
+SOCIAL ENGINEERING
+Socjotechnika (również inżynieria społeczna) – stosowanie środków psychologicznych i metod manipulacji
+  mających na celu przekazanie lub wyłudzenie określonych informacji bądź nakłonienie do realizacji określonych działań.
+
+XZ jest malym programem, na ktorego za bardzo nikt nie patrzy, a głównym rozwojem zajmuje sie Lasse Collin
+Pierwszy wklad do programu XZ wniosl w 2009 roku.
+Sam program 
+
+Pojawia sie Jia Tan. Osoba przedstawia mozliwe ulepszenia programu XZ.
+Nie byla to krótka operacja, Jia Tan proponowal rozwiazania przez kilka lat oraz 
+uzyskiwal sympatie Lasse'go
+
+Po jakims czasie, uzytkownicy programu XZ zaczeli pisac maile do Lasse'go w sprawie rozwoju aplikacji.
+Narzekali oni na powolny rozwoj programu oraz 
+
+  
+
+DEPENDENCY
+
