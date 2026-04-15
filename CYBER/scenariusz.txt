@@ -37,7 +37,9 @@ Szyfrowanie asymetryczne opiera się na posiadaniu dwóch kluczy.
   [veritasium, kolorki]
 
 
-BACKDOOR
+XZ BACKDOOR czesc wlasciwa
+
+Sam backdoor mial byc skupiony na dystrybucjach Fedora oraz RedHat Enterprise.
 
 SOCIAL ENGINEERING
 Socjotechnika (również inżynieria społeczna) – stosowanie środków psychologicznych i metod manipulacji
@@ -52,9 +54,58 @@ Nie byla to krótka operacja, Jia Tan proponowal rozwiazania przez kilka lat ora
 uzyskiwal sympatie Lasse'go
 
 Po jakims czasie, uzytkownicy programu XZ zaczeli pisac maile do Lasse'go w sprawie rozwoju aplikacji.
-Narzekali oni na powolny rozwoj programu oraz 
+Narzekali oni na powolny rozwoj programu oraz brak zaangazowania ze strony Lasse'go.
+Lasse przeprosil uzytkownikow i z powodow prywatnych oraz ograniczonego czasu, przekazal on zarzadzanie aplikacją
+Jia Tan'owi, jako ze juz wczesniej proponowal rozwiazania oraz pomagal z rozwojem
 
-  
+IMPLEMENTACJA
 
-DEPENDENCY
+Jia Tan nie mogl zaimplementowac jawnie backdoora do programu XZ, pakiet jest rozwijany na platformie GitHub, która pozwalaja
+(w tym przypadku) wgląd do kodu źródłowego.
+Jia Tan schowal zlosliwe oprogramowanie w plikach binarnych (binary BLOBS), które są pomocne przy tworzeniu programow pakujacych.
+Backdoor jednak musialbyc jakos wykonywalny, Jia Tan dodal male zmiany w plikach kompilujacych program XZ.
 
+WYKONYWANIE KODU.
+
+Wiekszosc nowoczesnych systemow, nie tworzy kopii programow, ktore sa jako dependency. Spowodowalo by to wiele kopii, ktore jednoczesnie musialyby byc 
+aktualizowane, tworzy to problemy.
+Zamiast tego, przy kompilacji programu (w tym przypadku openSSH), linker wypelnia Global Offset Table, adresami funkcji innych programow, ktore sa 
+dostepne przez shared library.
+
+IMPLEMENTACJA CZ.2 
+Glownym zamyslem wykonania kodu, bylo podmienienie adresu legitnej funkcji deszyfrujacej w GOT programow openssh, na adres funkcji backdoor.
+Wykonane to zostalo za pomoca programu IFUNC RESOLVER.
+1. Nie mozna nadpisac adresu funkcji, przed wypelnieniem tablicy GOT, poniewaz zostanie on nadpisany przez atakowany program legitnym adresem.
+2. Nie mozna nadpisac adresu funkcji, po wypelnieniu tablicy GOT, bo staje sie ona read-only.
+A wiec, nadpisac adres mozna tylko w oknie czasowym, gdy adres zostanie wypelniony oraz proces wypelniania adresami nie zostal zakonczony.
+Aby wstrzelic sie w okienko, zostal wykorzystany program debugujacy, ktory wykonuje funkcje za kazdym razem kiedy jakis adres zostal wpisany.
+Feature ten nazywa sie Dynamic AutoHook, ktory bada poprawnosc oraz czas trwania wpisania adresu.
+Jednak Dynamic AutoHook, nie jest ograniczony i moze uruchomic dowolna funkcje, tutaj wchodzi w dzialanie IFUNC RESOLVER, ktory dla konkretnego
+wpisanego adresu podmienia funkcje dubugujaca, na funkcje ktora zmieni adres z legitnego na zlosliwy.
+
+IMPLEMENTACJA CZ.3
+AutoHook jest zarzadzany przez system, a wiec Jia Tan nie ma dostepu jawnie do funkcji debugujacej, musi on przeskanowac sekcje binarne programu 
+IFUNC w poszukiwaniu naszego autohooka, napisal dekoder, ktory zamienia kod binarny na czytelny, co pozwala na znalezienie naszego hooka.
+Po podmiance, wpisywanie adresow do tablicy oraz wykonywanie autohooka jest legitne, ale funkcja ktora jest wykonywana, zostala podmieniona 
+na tą wstrzykującą zlosliwy adres funkcji.
+
+SUKCES
+Udalo sie, Jia Tan pisal maile do ludzi ktorzy zarzadzali developmentem dystrybucji linuxa w podekscytowaniu, oswiadczajac nowa wersje programu.
+Zaktualizowany XZ zostal zaimplementowany w eksperymentalnych wersjach systemow operacyjnych.
+
+PROBLEM 
+Program Jia Tan, byl pisany recznie i jest on programem nisko-poziomowym, a wiec powszechne za bugi i bledy zwiazane z pamieca. XZ mial problemy z memory leak'iem, do debugowania zostal uzyty program valgrind, ktory zauwazyl problemy z zapisywaniem informacji
+do pamieci ktora nie jest dostepna dla programu.
+
+Zlosliwe oprogramowanie bylo ukryte w binarnych BLOBACH, ktore byly plikami testowymi. Jia Tan nie mogl zmienic losowo generowanych plikow testowych
+bo wygladaloby to zbyt podejrzanie, stworzyl wiec on nowe pliki testowe, powolujac sie na brak mozliwosci reprodukcji poprzednich, przy okazji
+naprawiajac blad w programie. Musial on tez oczywiscie zmienic sam jawny kod programu, wymyslajac udawane rozwiazania oraz dodatkowe komentarze,
+aby naprawa bledu wydala sie legitna.
+
+FUN FACT CALOSC TRWALA OKOLO 2.5 ROKU.
+
+ODKRYCIE
+Andres Freund, jest programista w Microsofcie i zajmuje sie rozwijaniem projektu postgreSQL. 
+Testuje on postgresa na eksperymentalnych wersjach debiana, zauwaza on jednak opoznienie w komunikacji z serwerem, inzynieria wsteczna dostrzega
+ze problem lezy w testowych plikach binarych, po glebszej analizie dochodzi do wniosku, ze to nie jest sialalala a backdoor.
+Zglosil on problem do szefow bezpieczenstwa RedHat, ktorzy zareagowali, cofneli zmiany w eksperymentalnych wersjach oraz naglosnili sprawe.
