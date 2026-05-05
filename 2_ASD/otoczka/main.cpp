@@ -3,6 +3,7 @@
 #include<fstream>
 #include<utility>
 #include<algorithm>
+#include<stack>
 using namespace std;
 
 typedef struct Node{
@@ -20,9 +21,11 @@ struct Tree{
 
   //print nodes in terminal
   void print_nodes(){
+    cout << "\nPrinting node_list\n";
     for(int i = 0; i < node_list.size(); i++){
       cout << "ID: " << node_list[i].id << ", OX: " << node_list[i].OX << ", OY: " << node_list[i].OY << endl;
     }
+    cout << "\n\n";
   }
 
   int add_node(){
@@ -70,16 +73,51 @@ struct Tree{
   }//find starting point
 
 
-  //void sortNodesAngle(){
-  //  vector<Node> sorted_vectors = node_list;
-  //  Node lowest_point_copy = lowest_point;    
-  //  sort(node_list.begin(),node_list.end(),[lowest_point_copy](Node pi, Node pj){
-
-  //      
-  //      });
-
-  //}
+  void sortNodesAngle(){
+    vector<Node> sorted_vectors = node_list;
+    Node p0 = lowest_point;
+    cout << "enter\n";
+    sort(sorted_vectors.begin() + 1,sorted_vectors.end(),[p0](Node pi, Node pj){
+          double determinant = (((pi.OX - p0.OX)*(pj.OY - p0.OY)) - ((pj.OX - p0.OX)*(pi.OY - p0.OY)));
+          //return a < b sorts in ascending order 
+          if(determinant > 0){
+            cout << "determinant: " << determinant << endl;
+            return true;
+          }else {
+            cout << "determinant: " << determinant << endl;
+            return false;
+          }
+        });
+    cout << "exit\n";
+    for(int i = 0; i < sorted_vectors.size(); i++){
+      cout << "ID: " << sorted_vectors[i].id << ", OX: " << sorted_vectors[i].OX << ", OY: " << sorted_vectors[i].OY << endl;
+    }
+    cout << "\n\n";
+    node_list = sorted_vectors;
+  }
   
+  double calculateDeterminant(Node p0, Node pi, Node pj){
+    double determinant = (((pi.OX - p0.OX)*(pj.OY - p0.OY)) - ((pj.OX - p0.OX)*(pi.OY - p0.OY)));
+    return determinant;
+  }
+
+  void createOtoczka(){
+    vector<Node> node_stack;
+    node_stack.push_back(node_list[0]);
+    node_stack.push_back(node_list[1]);
+    node_stack.push_back(node_list[2]);
+    cout << " size of stack: " << node_stack.size() << endl; //3
+    cout << "-1 element: "  << node_stack.at(node_stack.size()-2).id << endl;
+    for(int i = 3; i < node_list.size(); i++){
+      while((double determinant = calculateDeterminant(node_stack.at(node_stack.size()-2), node_stack.back(), node_list.at(i))) > 0){
+        node_stack.pop_back();
+      }
+      if (determinant < 0){
+        node_stack.push_back(node_list.at(i));
+      }
+    }
+  }
+
 };//tree
 
 
@@ -95,5 +133,7 @@ int main(){
   tree.print_nodes();
   tree.findStartingPoint(); 
   tree.print_nodes();
+  tree.sortNodesAngle();
+  tree.createOtoczka();
   return 0;
 }
